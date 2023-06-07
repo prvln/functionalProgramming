@@ -2,24 +2,20 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from dataclasses import dataclass, field
 
+firstFigure = []
+secondFigure = []
 
-firstFigure = [
-    [135, 118 , 207, 76],
-    [207, 76  , 280, 119],
-    [280, 119 , 253, 190],
-    [253, 190, 163, 190],
-    [163, 190, 135, 118]
-]
+def readFileAndMakeFigure(fileName, figure): 
+    with open(fileName, 'r') as f:
+        for line in f:
+            lst = []
+            strs = line.split()
+            for point in strs:
+                lst.append(int(point))
+            figure.append(lst)
 
-secondFigure = [
-    [100, 100, 100, 300],
-    [100, 100, 150, 150],
-    [150, 150, 170, 80],
-    [170, 80, 190, 100],
-    [190, 100, 240, 250],
-    [100, 300, 240, 250]
-]
-
+readFileAndMakeFigure('edges_of_figure_1.txt', firstFigure)
+readFileAndMakeFigure('edges_of_figure_2.txt', secondFigure)
 
 @dataclass
 class Edge:
@@ -109,7 +105,11 @@ def processFigure(_firstFigure, _secondFigure, operation):
             crossing["x"] == figure1[crossing["edge1"]].x2 and crossing["y"] == figure1[crossing["edge1"]].y2):
             
             # запоминается сабдивижн рёбер
-            idSwapMap[crossing["edge2"]] = ID.getNextID()
+            try:
+                if m := list(idSwapMap.keys())[list(idSwapMap.values()).index(crossing["edge1"])]:
+                    idSwapMap[m] = ID.getNextID()
+            except ValueError:
+                idSwapMap[crossing["edge2"]] = ID.getNextID()
 
             # разбивается только второе ребро
             figure2[ID.getCurrentID()] = Edge(1, crossing["x"], crossing["y"], figure2[crossing["edge2"]].x1, figure2[crossing["edge2"]].y1, False, ID.getCurrentID())
@@ -123,7 +123,11 @@ def processFigure(_firstFigure, _secondFigure, operation):
             crossing["x"] == figure2[crossing["edge2"]].x2 and crossing["y"] == figure2[crossing["edge2"]].y2):
 
             # запоминается сабдивижн рёбер
-            idSwapMap[crossing["edge1"]] = ID.getNextID()
+            try:
+                if m := list(idSwapMap.keys())[list(idSwapMap.values()).index(crossing["edge1"])]:
+                    idSwapMap[m] = ID.getNextID()
+            except ValueError:
+                idSwapMap[crossing["edge1"]] = ID.getNextID()
 
             # разбивается только первое ребро
             figure1[ID.getCurrentID()] = Edge(1, crossing["x"], crossing["y"], figure1[crossing["edge1"]].x1, figure1[crossing["edge1"]].y1, False, ID.getCurrentID())
@@ -134,7 +138,11 @@ def processFigure(_firstFigure, _secondFigure, operation):
         # обработка Х-образных пересечений
         else:
             # запоминается сабдивижн рёбер
-            idSwapMap[crossing["edge1"]] = ID.getNextID()
+            try:
+                if m := list(idSwapMap.keys())[list(idSwapMap.values()).index(crossing["edge1"])]:
+                    idSwapMap[m] = ID.getNextID()
+            except ValueError:
+                idSwapMap[crossing["edge1"]] = ID.getNextID()
 
             # разбиваются оба ребра
             figure1[ID.getCurrentID()] = Edge(1, crossing["x"], crossing["y"], figure1[crossing["edge1"]].x2, figure1[crossing["edge1"]].y2, False, ID.getCurrentID())
@@ -143,7 +151,11 @@ def processFigure(_firstFigure, _secondFigure, operation):
             figure1[crossing["edge1"]].y2 = crossing["y"]
 
             # переопределяют связи между пересечениями рёбер
-            idSwapMap[crossing["edge2"]] = ID.getNextID()
+            try:
+                if m := list(idSwapMap.keys())[list(idSwapMap.values()).index(crossing["edge2"])]:
+                    idSwapMap[m] = ID.getNextID()
+            except ValueError:
+                idSwapMap[crossing["edge2"]] = ID.getNextID()
 
             figure2[ID.getCurrentID()] = Edge(1, crossing["x"], crossing["y"], figure2[crossing["edge2"]].x2, figure2[crossing["edge2"]].y2, False, ID.getCurrentID())
 
@@ -277,38 +289,5 @@ btnTON.pack(side="left", expand=False, padx = 10, pady = 10)
 
 btnXOR = ttk.Button(buttonsFrame, text="A XOR B", command= lambda : processAndDraw(canvas, firstFigure, secondFigure, "XOR"))
 btnXOR.pack(side="left", expand=False, padx = 10, pady = 10)
-
-
-
-# firstFigure = [
-#     [100, 100, 200, 100],
-#     [200, 100, 200, 200],
-#     [100, 200, 200, 200],
-#     [100, 100, 100, 200],
-# ]
-
-# secondFigure = [
-#     [90, 120, 150, 120],
-#     [150, 120, 150, 150],
-#     [90, 150, 150, 150],
-#     [90, 120, 90, 150],
-# ]
-
-
-
-# firstFigure = [
-#     [100, 100 , 400, 100],
-#     [400, 100  , 400, 400],
-#     [400, 400 , 100, 400],
-#     [100, 400, 100, 100]
-# ]
-
-# secondFigure = [
-#     [200, 200, 300, 200],
-#     [300, 200, 300, 300],
-#     [300, 300, 200, 300],
-#     [200, 300, 200, 200]
-# ]
-
 
 window.mainloop()
